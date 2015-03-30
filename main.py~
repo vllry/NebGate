@@ -22,12 +22,12 @@ timeoutTimer.start()
 
 
 def generate_id():
-	if random.random() < 0.25:
+	if random.random() < 0.3:
 		bosnia = ['bosnia-north', 'bosnia-east', 'bosnia-south', 'bosnia-west']
 		return random.choice(bosnia)
 	else:
 		greek = ['gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'mu', 'omicron', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega']
-		serverid = random.choice(greek)
+		serverid = random.choice(SERVERNAMES)
 		if random.random() < 0.1:
 			serverid += "-enterprise-edition"
 		return serverid
