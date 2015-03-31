@@ -2,11 +2,7 @@ from bottle import route, run, request
 import random, time
 from threading import Thread
 
-
-
 SERVERS = {}
-
-
 
 def timeoutServers():
 	while True:
@@ -20,7 +16,6 @@ timeoutTimer = Thread(target=timeoutServers)
 timeoutTimer.start()
 	
 
-
 def generate_id():
 	if random.random() < 0.25:
 		bosnia = ['bosnia-north', 'bosnia-east', 'bosnia-south', 'bosnia-west']
@@ -32,37 +27,35 @@ def generate_id():
 			serverid += "-enterprise-edition"
 		return serverid
 
-
-
 @route('/')
 def hello():
     return "Toast"
-
-
 
 @route('/server')
 def server():
     return str(SERVERS)
 
-
-
 @route('/server/register', method='POST')
 def register_server():
 	port = request.forms.get('port')
 	mapname = request.forms.get('map')
-	print mapname
 	ip = request.remote_addr
+    
 	serverid = generate_id()
 	while serverid in SERVERS:
 		serverid = generate_id()
-	SERVERS[serverid] = {'ip':ip, 'port':port, 'map':mapname, 'ping':time.time()}
+
+	SERVERS[serverid] = {
+        'ip':ip, 
+        'port':port, 
+        'map':mapname, 
+        'ping':time.time()
+    }
 
 	print "Registering " + ip + ":" + port, "as", serverid
 	return {
 		'id': str(serverid)
 		}
-
-
 
 @route('/server/map/<name>', method='GET')
 def get_server_running_map(name):
@@ -73,28 +66,16 @@ def get_server_running_map(name):
 				'ip':server['ip'],
 				'port':server['port']
 				}
-	return {
-		'status':'bad'
-		}
-	
-
-
-
-@route('/server/id/<name>', method='GET')
-def get_server_info(name):
-	return "SHOW RECIPE " + name
-
-
+    #TODO: Spool up a server running that map
+	return {'status':'we do not have a server running that map yet'}
 
 @route('/server/id/<name>/ping', method='GET')
 def server_ping(name):
 	if name in SERVERS:
 		SERVERS[name]['ping'] = time.time()
-		return 'ok'
+		return {'status': 'ok'}
 	else:
-		return 'wtf dude'
-
-
+		return {'status': 'wtf dude'}
 
 run(host='', port=27071, debug=True)
 
