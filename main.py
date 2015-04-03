@@ -10,14 +10,30 @@ SERVERS = {}
 
 def timeoutServers():
 	while True:
-		time.sleep(10)
+		time.sleep(15)
 		for key,server in SERVERS.items():
 			print "time", server['ping'], time.time()
-			if server['ping'] + 10 < time.time():
-				print "del"
+			if server['ping'] + 15 < time.time():
+				print "Removing inactive server", key
 				del SERVERS[key]
 timeoutTimer = Thread(target=timeoutServers)
 timeoutTimer.start()
+
+
+
+def set_server_map(mapname):
+	lowest_server = ''
+	lowest_pop = 99
+	for key,server in SERVERS:
+		if server['players'] < lowest_pop and 'changemap' not in server:
+			lowest_server = key
+			lowest_pop = server['players']
+	delay = 0
+	if lowest_pop and lowest_pop < 3:
+		delay = 60
+	else:
+		delay = 90
+	SERVERS[lowest_server]['mapchange'] = {'delay':delay, 'map':mapname}
 
 
 
@@ -51,6 +67,7 @@ def register_server():
 	port = request.forms.get('port')
 	mapname = request.forms.get('map')
 	ip = request.remote_addr
+	players = request.forms.get('playercount')
     
 	serverid = generate_id()
 	while serverid in SERVERS:
@@ -59,11 +76,12 @@ def register_server():
 	SERVERS[serverid] = {
         'ip':ip, 
         'port':port, 
-        'map':mapname, 
+        'map':mapname,
+	'players':int(players),
         'ping':time.time()
     }
 
-	print "Registering " + ip + ":" + port, "as", serverid
+	print "Registering " + ip + ":" + port + " (running with " + players + " on " + mapname +") as" + serverid
 	return {
 		'id': str(serverid)
 		}
@@ -79,8 +97,10 @@ def get_server_running_map(name):
 				'ip':server['ip'],
 				'port':server['port']
 				}
-    #TODO: Spool up a server running that map
-	return {'status':'we do not have a server running that map yet'}
+	set_server_map(name)
+	return {
+		'status':'no server yet'
+		}
 
 
 
@@ -88,9 +108,20 @@ def get_server_running_map(name):
 def server_ping(name):
 	if name in SERVERS:
 		SERVERS[name]['ping'] = time.time()
-		return {'status': 'ok'}
+		SERVERS[name]['players'] = request.forms.get('playercount')
+		SERVERS[name]['map'] = request.forms.get('map')
+		if 'changemap' in SERVERS[name]:
+			return {
+				'status': 'ok',
+				'changemap': SERVERS[name]['changemap']
+				}
+		return {
+			'status': 'ok'
+			}
 	else:
-		return {'status': 'wtf dude'}
+		return {
+			'status': 'wtf dude'
+			}
 
 
 
