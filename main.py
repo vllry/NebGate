@@ -111,9 +111,11 @@ def server_ping(name):
 		SERVERS[name]['players'] = request.forms.get('playercount')
 		SERVERS[name]['map'] = request.forms.get('map')
 		if 'changemap' in SERVERS[name]:
+			changemap = SERVERS[name]['changemap']
+			del SERVERS[name]['changemap']
 			return {
 				'status': 'ok',
-				'changemap': SERVERS[name]['changemap']
+				'changemap': changemap
 				}
 		return {
 			'status': 'ok'
