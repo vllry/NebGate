@@ -2,11 +2,7 @@ from bottle import route, run, request
 import random, time
 from threading import Thread
 
-
-
 SERVERS = {}
-
-
 
 def timeoutServers():
 	while True:
@@ -18,8 +14,7 @@ def timeoutServers():
 				del SERVERS[key]
 timeoutTimer = Thread(target=timeoutServers)
 timeoutTimer.start()
-
-
+	
 
 def generate_id():
 	if random.random() < 0.25:
@@ -32,19 +27,13 @@ def generate_id():
 			serverid += "-enterprise-edition"
 		return serverid
 
-
-
 @route('/')
 def hello():
     return "Toast"
 
-
-
 @route('/server')
 def server():
     return str(SERVERS)
-
-
 
 @route('/server/register', method='POST')
 def register_server():
@@ -68,8 +57,6 @@ def register_server():
 		'id': str(serverid)
 		}
 
-
-
 @route('/server/map/<name>', method='GET')
 def get_server_running_map(name):
 	for key,server in SERVERS.items():
@@ -82,8 +69,6 @@ def get_server_running_map(name):
     #TODO: Spool up a server running that map
 	return {'status':'we do not have a server running that map yet'}
 
-
-
 @route('/server/id/<name>/ping', method='GET')
 def server_ping(name):
 	if name in SERVERS:
@@ -91,8 +76,6 @@ def server_ping(name):
 		return {'status': 'ok'}
 	else:
 		return {'status': 'wtf dude'}
-
-
 
 run(host='', port=27071, debug=True)
 
