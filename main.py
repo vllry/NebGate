@@ -97,6 +97,10 @@ def get_server_running_map(name):
 				'ip':server['ip'],
 				'port':server['port']
 				}
+		elif server['changemap']['map'] == name:
+			return {
+				'status':'no server yet'
+				}
 	set_server_map(name)
 	return {
 		'status':'no server yet'
