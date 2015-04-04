@@ -22,11 +22,11 @@ timeoutTimer.start()
 
 
 
-def set_server_map(mapname):
+def set_server_map(mapname, callingserver):
 	lowest_server = ''
 	lowest_pop = 99
 	for key,server in SERVERS:
-		if server['players'] < lowest_pop and 'changemap' not in server:
+		if key != callingserver and server['players'] < lowest_pop and 'changemap' not in server:
 			lowest_server = key
 			lowest_pop = server['players']
 	delay = 0
@@ -104,7 +104,7 @@ def get_server_running_map(name):
 			return {
 				'status':'no server yet'
 				}
-	set_server_map(name)
+	set_server_map(name, request.forms.get('id'))
 	return {
 		'status':'no server yet'
 		}
