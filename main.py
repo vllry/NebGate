@@ -5,6 +5,7 @@ from threading import Thread
 
 
 SERVERS = {}
+DUPES = {}
 
 
 
@@ -12,7 +13,6 @@ def timeoutServers():
 	while True:
 		time.sleep(15)
 		for key,server in SERVERS.items():
-			print "time", server['ping'], time.time()
 			if server['ping'] + 15 < time.time():
 				print "Removing inactive server", key
 				del SERVERS[key]
@@ -39,7 +39,7 @@ def set_server_map(mapname):
 
 def generate_id():
 	if random.random() < 0.25:
-		bosnia = ['bosnia-north', 'bosnia-east', 'bosnia-south', 'bosnia-west']
+		bosnia = ['bosnia-north', 'bosnia-east', 'bosnia-south', 'bosnia-west', 'bosnia-pole']
 		return random.choice(bosnia)
 	else:
 		greek = ['gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta', 'iota', 'kappa', 'mu', 'omicron', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega']
@@ -109,11 +109,13 @@ def get_server_running_map(name):
 
 
 @route('/server/id/<name>/ping', method='GET')
-def server_ping(name):
+def get_server_ping(name):
 	if name in SERVERS:
 		SERVERS[name]['ping'] = time.time()
 		SERVERS[name]['players'] = request.forms.get('playercount')
-		SERVERS[name]['map'] = request.forms.get('map')
+		mapname = request.forms.get('map')
+		SERVERS[name]['map'] = mapname
+
 		if 'changemap' in SERVERS[name]:
 			changemap = SERVERS[name]['changemap']
 			del SERVERS[name]['changemap']
@@ -121,13 +123,46 @@ def server_ping(name):
 				'status': 'ok',
 				'changemap': changemap
 				}
+
+		elif mapname in DUPES: #If there's dupes at the same time as a changemap, we don't want 'em
+			dupes = DUPES[mapname]
+			del DUPES[mapname]
+			return {
+				'status': 'ok',
+				'dupes': dupes
+				}
+
 		return {
 			'status': 'ok'
 			}
+
 	else:
 		return {
 			'status': 'wtf dude'
 			}
+
+
+
+@route('/server/id/<name>/dupe', method='GET')
+def get_dupe(name):
+	dupe = request.forms.get(dupe)
+	dest = request.forms.get(dest)
+	pos = request.forms.get(pos)
+	ang = request.forms.get(ang)
+	vel = request.forms.get(vel)
+	angvel = request.forms.get(angvel)
+	dupetime = request.forms.get(time)
+	if not dest in DUPES:
+		DUPES[dest] = []
+	DUPES[dest].append({
+			'dupe':dupe,
+			'pos':pos,
+			'ang':ang,
+			'vel':vel,
+			'angvel':angvel,
+			'time':dupetime
+			})
+	print "Got dupe from " + name
 
 
 
