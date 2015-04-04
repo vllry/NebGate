@@ -25,8 +25,8 @@ timeoutTimer.start()
 def set_server_map(mapname, callingserver):
 	lowest_server = ''
 	lowest_pop = 99
-	for key,server in SERVERS:
-		if key != callingserver and server['players'] < lowest_pop and 'changemap' not in server:
+	for key,server in SERVERS.items():
+		if key != callingserver and server['players'] < lowest_pop and ('changemap' not in server or server['changemap']['map'] == mapname):
 			lowest_server = key
 			lowest_pop = server['players']
 	delay = 0
@@ -66,7 +66,7 @@ def server():
 @route('/server/register', method='POST')
 def register_server():
 	port = request.forms.get('port')
-	mapname = request.forms.get('map')
+	mapname = request.forms.get('map').lower()
 	ip = request.remote_addr
 	players = request.forms.get('playercount')
     
@@ -93,6 +93,7 @@ def register_server():
 
 @route('/server/map/<name>', method='GET')
 def get_server_running_map(name):
+	name = name.lower()
 	for key,server in SERVERS.items():
 		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
 			return {
@@ -115,8 +116,8 @@ def get_server_running_map(name):
 def get_server_ping(name):
 	if name in SERVERS:
 		SERVERS[name]['ping'] = time.time()
-		SERVERS[name]['players'] = request.forms.get('playercount')
-		mapname = request.forms.get('map')
+		SERVERS[name]['players'] = int(request.forms.get('playercount'))
+		mapname = request.forms.get('map').lower()
 		SERVERS[name]['map'] = mapname
 
 		if 'changemap' in SERVERS[name]:
