@@ -12,7 +12,7 @@ PINGTIME = 15
 
 def timeoutServers():
 	while True:
-		time.sleep(PINGTIME*1.5)
+		time.sleep(PINGTIME)
 		for key,server in SERVERS.items():
 			if server['ping'] + PINGTIME*1.5 < time.time():
 				print "Removing inactive server", key

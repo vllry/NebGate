@@ -75,21 +75,18 @@ def register_server():
 		serverid = generate_id()
 
 	SERVERS[serverid] = {
-        'ip':ip, 
-        'port':port, 
-        'map':mapname,
-	'players':int(players),
-        'ping':time.time()
-
-	return {
-		'status':'ok',
-		'interval':PINGTIME
-		}
-    }
+			'ip':ip, 
+			'port':port,
+			'map':mapname,
+			'players':int(players),
+        		'ping':time.time()
+			}
 
 	print "Registering " + ip + ":" + port + " (running with " + players + " on " + mapname +") as" + serverid
 	return {
-		'id': str(serverid)
+		'id': str(serverid),
+		'status':'ok',
+		'interval':PINGTIME
 		}
 
 
