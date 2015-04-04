@@ -82,7 +82,7 @@ def register_server():
         		'ping':time.time()
 			}
 
-	print "Registering " + ip + ":" + port + " (running with " + players + " on " + mapname +") as" + serverid
+	print "Registering " + ip + ":" + port + " (running with " + players + " on " + mapname +") as " + serverid
 	return {
 		'id': str(serverid),
 		'status':'ok',
