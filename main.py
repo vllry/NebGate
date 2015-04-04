@@ -34,7 +34,7 @@ def set_server_map(mapname, callingserver):
 		delay = 60
 	else:
 		delay = 90
-	SERVERS[lowest_server]['mapchange'] = {'delay':delay, 'map':mapname}
+	SERVERS[lowest_server]['changemap'] = {'delay':delay, 'map':mapname}
 
 
 
@@ -94,13 +94,13 @@ def register_server():
 @route('/server/map/<name>', method='GET')
 def get_server_running_map(name):
 	for key,server in SERVERS.items():
-		if server['map'] == name and not server['changemap']['map']: #Ignore servers that are running this map but due to change
+		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
 			return {
 				'status':'ok',
 				'ip':server['ip'],
 				'port':server['port']
 				}
-		elif server['changemap']['map'] == name:
+		elif 'changemap' in server and server['changemap']['map'] == name:
 			return {
 				'status':'no server yet'
 				}
@@ -111,7 +111,7 @@ def get_server_running_map(name):
 
 
 
-@route('/server/id/<name>/ping', method='GET')
+@route('/server/id/<name>/ping', method='POST')
 def get_server_ping(name):
 	if name in SERVERS:
 		SERVERS[name]['ping'] = time.time()
