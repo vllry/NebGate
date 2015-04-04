@@ -6,14 +6,15 @@ from threading import Thread
 
 SERVERS = {}
 DUPES = {}
+PINGTIME = 15
 
 
 
 def timeoutServers():
 	while True:
-		time.sleep(15)
+		time.sleep(PINGTIME)
 		for key,server in SERVERS.items():
-			if server['ping'] + 15 < time.time():
+			if server['ping'] + PINGTIME*1.5 < time.time():
 				print "Removing inactive server", key
 				del SERVERS[key]
 timeoutTimer = Thread(target=timeoutServers)
@@ -79,6 +80,11 @@ def register_server():
         'map':mapname,
 	'players':int(players),
         'ping':time.time()
+
+	return {
+		'status':'ok',
+		'interval':PINGTIME
+		}
     }
 
 	print "Registering " + ip + ":" + port + " (running with " + players + " on " + mapname +") as" + serverid
@@ -91,7 +97,7 @@ def register_server():
 @route('/server/map/<name>', method='GET')
 def get_server_running_map(name):
 	for key,server in SERVERS.items():
-		if server['map'] == name:
+		if server['map'] == name and not server['changemap']['map']: #Ignore servers that are running this map but due to change
 			return {
 				'status':'ok',
 				'ip':server['ip'],
@@ -118,7 +124,8 @@ def get_server_ping(name):
 
 		if 'changemap' in SERVERS[name]:
 			changemap = SERVERS[name]['changemap']
-			del SERVERS[name]['changemap']
+			if mapname == changemap:
+				del SERVERS[name]['changemap'] #Delete the changemap info once the map has been loaded
 			return {
 				'status': 'ok',
 				'changemap': changemap
