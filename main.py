@@ -5,7 +5,6 @@ from threading import Thread
 
 
 SERVERS = {}
-DUPES = {}
 MAPQUEUE = {}
 WHITELIST = {'192.168.0.*'}
 PINGTIME = 15
@@ -50,6 +49,11 @@ def set_server_map(mapname, callingserver):
 	else:
 		delay = 90
 	SERVERS[lowest_server]['changemap'] = {'delay':delay, 'map':mapname}
+	MAPQUEUE.get(SERVERS[lowest_server]['map'], []).append({
+		'event': 'mapchange',
+		'map': mapname,
+		'delay': delay,
+	})
 
 
 
@@ -135,30 +139,10 @@ def get_server_ping(name):
 		mapname = request.forms.get('map').lower()
 		SERVERS[name]['map'] = mapname
 
-		for event in MAPQUEUE.get(mapname, []):
-			#CHANGE TO MAPQUEUE
-
-		if 'changemap' in SERVERS[name]:
-			changemap = SERVERS[name]['changemap']
-			if mapname == changemap:
-				del SERVERS[name]['changemap'] #Delete the changemap info once the map has been loaded
-			return {
-				'status': 'ok',
-				'changemap': changemap
-				}
-
-		elif mapname in DUPES: #If there's dupes at the same time as a changemap, we don't want 'em
-			dupes = DUPES[mapname]
-			del DUPES[mapname]
-			return {
-				'status': 'ok',
-				'dupes': dupes
-				}
-
 		return {
 			'status': 'ok',
-			}
-
+			'events' : MAPQUEUE.pop(mapname, []),
+		}
 	else:
 		return {
 			'status': 'wtf dude'
@@ -175,9 +159,8 @@ def get_dupe(name):
 	vel = request.forms.get('vel')
 	angvel = request.forms.get('angvel')
 	dupetime = request.forms.get('time')
-	if not dest in DUPES:
-		DUPES[dest] = []
-	DUPES[dest].append({
+	MAPQUEUE.get(SERVERS[name]['map'], []).append({
+			'event': 'dupe',
 			'dupe':dupe,
 			'pos':pos,
 			'ang':ang,
