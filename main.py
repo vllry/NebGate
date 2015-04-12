@@ -94,19 +94,19 @@ def register_server():
 		serverid = generate_id()
 
 	SERVERS[serverid] = {
-			'ip':ip, 
-			'port':port,
-			'map':mapname,
-			'players':int(players),
-        		'ping':time.time()
-			}
+		'ip': ip, 
+		'port': port,
+		'map': mapname,
+		'players': int(players),
+		'ping': time.time(),
+	}
 
 	print "Registering " + ip + ":" + port + " (running with " + players + " on " + mapname +") as " + serverid
 	return {
 		'id': str(serverid),
-		'status':'ok',
-		'interval':PINGTIME
-		}
+		'status': 'ok',
+		'interval': PINGTIME,
+	}
 
 
 
@@ -116,18 +116,18 @@ def get_server_running_map(name):
 	for key,server in SERVERS.items():
 		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
 			return {
-				'status':'ok',
-				'ip':server['ip'],
-				'port':server['port']
-				}
+				'status': 'ok',
+				'ip': server['ip'],
+				'port': server['port'],
+			}
 		elif 'changemap' in server and server['changemap']['map'] == name:
 			return {
-				'status':'no server yet'
-				}
+				'status':'no server yet',
+			}
 	set_server_map(name, request.forms.get('id'))
 	return {
-		'status':'no server yet'
-		}
+		'status': 'no server yet',
+	}
 
 
 
@@ -141,12 +141,12 @@ def get_server_ping(name):
 
 		return {
 			'status': 'ok',
-			'events' : MAPQUEUE.pop(mapname, []),
+			'events': MAPQUEUE.pop(mapname, []),
 		}
 	else:
 		return {
-			'status': 'wtf dude'
-			}
+			'status': 'wtf dude',
+		}
 
 
 
@@ -160,14 +160,14 @@ def get_dupe(name):
 	angvel = request.forms.get('angvel')
 	dupetime = request.forms.get('time')
 	MAPQUEUE.get(SERVERS[name]['map'], []).append({
-			'event': 'dupe',
-			'dupe':dupe,
-			'pos':pos,
-			'ang':ang,
-			'vel':vel,
-			'angvel':angvel,
-			'time':dupetime
-			})
+		'event': 'dupe',
+		'dupe': dupe,
+		'pos': pos,
+		'ang': ang,
+		'vel': vel,
+		'angvel': angvel,
+		'time': dupetime,
+	})
 	print "Got dupe from " + name
 
 
@@ -176,9 +176,9 @@ def get_dupe(name):
 def player_going_to_map(mapname):
 	player = request.forms.get('player')
 	MAPQUEUE.get(mapname, []).append({
-					'event':'player',
-					'player':player
-					})
+		'event': 'player',
+		'player': player,
+	})
 
 
 
