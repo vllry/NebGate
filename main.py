@@ -48,6 +48,7 @@ def set_server_map(mapname, callingserver):
 		delay = 60
 	else:
 		delay = 90
+	print "Telling (lowest) server", lowest_server, "to change maps to", mapname
 	SERVERS[lowest_server]['changemap'] = {'delay':delay, 'map':mapname}
 	MAPQUEUE.get(SERVERS[lowest_server]['map'], []).append({
 		'event': 'mapchange',
@@ -139,11 +140,14 @@ def get_server_ping(name):
 		mapname = request.forms.get('map').lower()
 		SERVERS[name]['map'] = mapname
 
+		queue = MAPQUEUE.pop(mapname, [])
+		if len(queue) > 0: print "Sending", len(queue), "pull notifications to", name, ":", [x['event'] for x in queue]
 		return {
 			'status': 'ok',
-			'events': MAPQUEUE.pop(mapname, []),
+			'events': queue,
 		}
 	else:
+		print "Server '"+str(name)+"' not found."
 		return {
 			'status': 'wtf dude',
 		}
@@ -168,7 +172,7 @@ def get_dupe(name):
 		'angvel': angvel,
 		'time': dupetime,
 	})
-	print "Got dupe from " + name
+	print "Queued up a dupe going to " + name
 
 
 
