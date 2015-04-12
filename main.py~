@@ -6,7 +6,6 @@ from threading import Thread
 
 SERVERS = {}
 DUPES = {}
-MAPQUEUE = {}
 WHITELIST = {'192.168.0.*'}
 PINGTIME = 15
 
@@ -135,9 +134,6 @@ def get_server_ping(name):
 		mapname = request.forms.get('map').lower()
 		SERVERS[name]['map'] = mapname
 
-		for event in MAPQUEUE.get(mapname, []):
-			#CHANGE TO MAPQUEUE
-
 		if 'changemap' in SERVERS[name]:
 			changemap = SERVERS[name]['changemap']
 			if mapname == changemap:
@@ -156,7 +152,7 @@ def get_server_ping(name):
 				}
 
 		return {
-			'status': 'ok',
+			'status': 'ok'
 			}
 
 	else:
@@ -168,13 +164,13 @@ def get_server_ping(name):
 
 @route('/server/id/<name>/dupe', method='GET')
 def get_dupe(name):
-	dupe = request.forms.get('dupe')
-	dest = request.forms.get('dest')
-	pos = request.forms.get('pos')
-	ang = request.forms.get('ang')
-	vel = request.forms.get('vel')
-	angvel = request.forms.get('angvel')
-	dupetime = request.forms.get('time')
+	dupe = request.forms.get(dupe)
+	dest = request.forms.get(dest)
+	pos = request.forms.get(pos)
+	ang = request.forms.get(ang)
+	vel = request.forms.get(vel)
+	angvel = request.forms.get(angvel)
+	dupetime = request.forms.get(time)
 	if not dest in DUPES:
 		DUPES[dest] = []
 	DUPES[dest].append({
@@ -186,16 +182,6 @@ def get_dupe(name):
 			'time':dupetime
 			})
 	print "Got dupe from " + name
-
-
-
-@route('/server/map/<mapname>/player', method='GET')
-def player_going_to_map(mapname):
-	player = request.forms.get('player')
-	MAPQUEUE.get(mapname, []).append({
-					'event':'player',
-					'player':player
-					})
 
 
 
