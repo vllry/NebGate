@@ -1,11 +1,11 @@
 from bottle import route, run, request
 import random, time
-from threading import Thread
+import util
 
 
 
-SERVERS = {}
-MAPQUEUE = {}
+SERVERS = {}	# Note: persisted through reloads in launch.py
+MAPQUEUE = {}	# Note: persisted through reloads in launch.py
 WHITELIST = {'192.168.0.*'}
 PINGTIME = 15
 
@@ -25,13 +25,13 @@ def in_whitelist(ip):
 
 
 def timeoutServers():
-	while True:
+	while not timeoutTimer.stopped():
 		time.sleep(PINGTIME)
 		for key,server in SERVERS.items():
 			if server['ping'] + PINGTIME*2.5 < time.time():
 				print "Removing inactive server", key
 				del SERVERS[key]
-timeoutTimer = Thread(target=timeoutServers)
+timeoutTimer = util.StoppableThread(target=timeoutServers)
 timeoutTimer.start()
 
 
@@ -184,7 +184,4 @@ def player_going_to_map(mapname):
 		'player': player,
 	})
 
-
-
-run(host='', port=27071, debug=True)
 
