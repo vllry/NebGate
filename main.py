@@ -50,7 +50,7 @@ def set_server_map(mapname, callingserver):
 		delay = 90
 	print "Telling (lowest) server", lowest_server, "to change maps to", mapname
 	SERVERS[lowest_server]['changemap'] = {'delay':delay, 'map':mapname}
-	MAPQUEUE.get(SERVERS[lowest_server]['map'], []).append({
+	MAPQUEUE.setdefault(SERVERS[lowest_server]['map'], []).append({
 		'event': 'mapchange',
 		'map': mapname,
 		'delay': delay,
@@ -163,7 +163,7 @@ def get_dupe(name):
 	vel = request.forms.get('vel')
 	angvel = request.forms.get('angvel')
 	dupetime = request.forms.get('time')
-	MAPQUEUE.get(SERVERS[name]['map'], []).append({
+	MAPQUEUE.setdefault(SERVERS[name]['map'], []).append({
 		'event': 'dupe',
 		'dupe': dupe,
 		'pos': pos,
@@ -173,15 +173,22 @@ def get_dupe(name):
 		'time': dupetime,
 	})
 	print "Queued up a dupe going to " + name
+	return {
+		'status': 'ok',
+	}
 
 
 
-@route('/server/map/<mapname>/player', method='GET')
+@route('/server/map/<mapname>/player', method='POST')
 def player_going_to_map(mapname):
 	player = request.forms.get('player')
-	MAPQUEUE.get(mapname, []).append({
+	MAPQUEUE.setdefault(mapname, []).append({
 		'event': 'player',
 		'player': player,
 	})
+	print "Sending player", player, "to map", mapname
+	return {
+		'status': 'ok',
+	}
 
 
