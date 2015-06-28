@@ -53,3 +53,4 @@ else:
 
 
 bottle.run(host='', port=27071, debug=True)
+print "Got past bottle.run?!"

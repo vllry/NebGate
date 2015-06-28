@@ -116,6 +116,9 @@ def get_server_running_map(name):
 	name = name.lower()
 	for key,server in SERVERS.items():
 		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
+			MAPQUEUE.setdefault(server['map'], []).append({
+				'event': 'open',
+			})
 			return {
 				'status': 'ok',
 				'ip': server['ip'],
@@ -181,6 +184,7 @@ def get_dupe(name):
 
 @route('/server/map/<mapname>/player', method='POST')
 def player_going_to_map(mapname):
+	mapname = mapname.lower()
 	player = request.forms.get('player')
 	MAPQUEUE.setdefault(mapname, []).append({
 		'event': 'player',
