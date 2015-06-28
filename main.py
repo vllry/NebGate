@@ -111,14 +111,18 @@ def register_server():
 
 
 
-@route('/server/map/<name>', method='GET')
+@route('/server/map/<name>', method='POST')
 def get_server_running_map(name):
+	openrequest = 0
+	if request.forms.get('open'): openrequest = request.forms.get('open')
 	name = name.lower()
+
 	for key,server in SERVERS.items():
 		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
-			MAPQUEUE.setdefault(server['map'], []).append({
-				'event': 'open',
-			})
+			if openrequest:
+				MAPQUEUE.setdefault(server['map'], []).append({ #Tell the server to open a NebGate
+					'event': 'open',
+				})
 			return {
 				'status': 'ok',
 				'ip': server['ip'],
@@ -186,6 +190,7 @@ def get_dupe(name):
 def player_going_to_map(mapname):
 	mapname = mapname.lower()
 	player = request.forms.get('player')
+
 	MAPQUEUE.setdefault(mapname, []).append({
 		'event': 'player',
 		'player': player,
