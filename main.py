@@ -51,7 +51,7 @@ def set_server_map(mapname, callingserver):
 	print "Telling (lowest) server", lowest_server, "to change maps to", mapname
 	SERVERS[lowest_server]['changemap'] = {'delay':delay, 'map':mapname}
 	MAPQUEUE.setdefault(SERVERS[lowest_server]['map'], []).append({
-		'event': 'mapchange',
+		'event': 'changemap',
 		'map': mapname,
 		'delay': delay,
 	})
