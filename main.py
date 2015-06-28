@@ -114,8 +114,9 @@ def register_server():
 @route('/server/map/<name>', method='POST')
 def get_server_running_map(name):
 	openrequest = 0
-	if request.forms.get('open'): openrequest = request.forms.get('open')
+	if request.forms.get('open'): openrequest = int(request.forms.get('open'))
 	name = name.lower()
+	print(openrequest)
 
 	for key,server in SERVERS.items():
 		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
