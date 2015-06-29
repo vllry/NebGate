@@ -1,0 +1,143 @@
+<html>
+<head>
+</head>
+<!--<body style="background: #000000 url('plate.jpg') repeat center center ">-->
+<body style="background: #fff url('http://nebtown.info/fastdl/loading/backgrounds/{IMAGE}') no-repeat center center">
+<center>
+	<div style='position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 50%; height: 55%; margin: auto; overflow: show;'>
+		<img src='http://nebtown.info/fastdl/loading/ncl.png' style="height: 300px">
+		<div id='loadingtext' style='margin-top: 10px; color: #FFF; font-family: Arial; font-size: 24px; font-weight: bold;'>Loading Text..</div>
+	</div>
+</center>
+	<div style='-webkit-box-reflect: below -120px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.1, transparent), to(rgba(255, 255, 255, 1.0))); position: absolute; top: 90%; right: 0; bottom: 0; left: 5%; height: 100px; overflow: show; font-family: Arial; font-size: 36px; font-weight: bold; color: #DDD' id='files'>
+	</div>
+
+<script type="text/javascript">
+	var keywords = [
+	 "Throwing Nolphins...", 
+	 "Changing Map...", 
+	 "Crashing Gman...", 
+	 "Trolling Zerobrine...", 
+	 "Teleporting Explosive Barrels...", 
+	 "Scripting E2...",
+	 "Power Overwhelming...",
+	 "Stuffing Plushies...",
+	 "Removing World...",
+	 "Traveling the gravel (and other ores)",
+	 "Creating  Larmographical Error...",
+	 "Calibrating Manhacks...",
+	 "Cleaning gm_construct...",
+	 "Merry Christmas...",
+	 "Glowing Watermelons...",
+	 "Spawning X-Wings...",
+	 "Patching Balloons...",
+	 "Removing mingebag Garbage...",
+	 "Spamming Stargate With E2 Virus...",
+	 "Exploding Death Star...",
+	 "Painting Koopa's Shelves...",
+	 "Service Ensures Citizenship...",
+	 "Oiling Wheels...",
+	 "Expires December 31st 1999...",
+	 "A Mingebag Setup Us The Bomb!",
+	 "Stealing Earth's Oxygen...",
+	 "Are You Still There?",
+	 "Unwelding Boxes...", 
+	 "Charging Toolgun...", 
+	 "Breaking Addons...", 
+	 "Stuffing Ragdolls...", 
+	 "Unreticulating Splines...", 
+	 "Refuelling Thrusters...", 
+	 "Unknotting ropes...",
+	 "Painting Barrels...",
+	 "Feeding Birds...",
+	 "Bathing Father Grigori...",
+	 "Decoding Lua's syntax...",
+	 "Re-killing Alyx...",
+	 "Calibrating Manhacks...",
+	 "Cleaning Leafblower...",
+	 "Reconfiguring Gravity Matrix...",
+	 "Growing Watermelons...",
+	 "Mowing Grass...",
+	 "Plastering Walls...",
+	 "Inflating Balloons...",
+	 "Taming Physics...",
+	 "Calling Sleep( 1000 ); ",
+	 "Unfreezing The Freeman...",
+	 "Patching Broken Update...",
+	 "Delaying Episode 3...",
+	 "Changing Physgun Batteries...",
+	 "Breaking Source Engine..."
+	]
+
+
+	var bCanChangeStatus = true;
+	function ChangeText ( )	{
+		if ( bCanChangeStatus ) {
+			var keyword = keywords[ Math.floor( Math.random() * keywords.length ) ]
+			document.getElementById( "loadingtext" ).innerHTML = keyword;
+		}
+		
+		setTimeout( "ChangeText()", 2500 );
+	}
+	ChangeText();
+	
+	function GameDetails( servername, serverurl, mapname, maxplayers, steamid, gamemode ) {
+		if(maxplayers == 19) {
+			document.body.style.backgroundImage = "url('http://nebtown.info/fastdl/loading/Wormhole_Moving.gif')";
+			document.body.style.backgroundSize = "100% 100%";
+		}		
+	}
+	
+	var iFilesNeeded = 0;
+	var iFilesTotal = 0;
+	var bDownloadingFile = false;
+	
+	function SetFilesNeeded( iNeeded ) {
+		iFilesNeeded = iNeeded;
+		RefreshFileBox();
+	}
+	
+	function SetFilesTotal( iTotal ) {
+		iFilesTotal = iTotal;
+		RefreshFileBox();
+	}
+	
+	function DownloadingFile( filename ) {
+		if ( bDownloadingFile ) {
+			iFilesNeeded = iFilesNeeded - 1;
+			RefreshFileBox();
+		}
+		
+		document.getElementById( "loadingtext" ).innerHTML = "Downloading " + filename;
+		bCanChangeStatus = false;
+		setTimeout( "bCanChangeStatus = true;", 1000 );
+		
+		bDownloadingFile = true;
+	}
+	
+	function SetStatusChanged( status ) {
+		if ( bDownloadingFile ) {
+			iFilesNeeded = iFilesNeeded - 1;
+			bDownloadingFile = false;
+			RefreshFileBox();
+		}
+		
+		document.getElementById( "loadingtext" ).innerHTML = status;
+		bCanChangeStatus = false;
+		setTimeout( "bCanChangeStatus = true;", 1000 );
+	}
+	
+	function RefreshFileBox() {
+		document.getElementById( "files" ).innerHTML = "<img src='http://nebtown.info/fastdl/loading/download.png' style='position: relative; top: 7px;'> " + iFilesNeeded + " downloads remaining";
+		
+		if ( iFilesTotal > 0 ) {
+			document.getElementById( "files" ).style.visibility = 'visible';
+		} else {
+			document.getElementById( "files" ).style.visibility = 'hidden';
+		}
+	}
+	RefreshFileBox();
+</script>
+
+</body>
+</html>

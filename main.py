@@ -8,6 +8,17 @@ SERVERS = {}	# Note: persisted through reloads in launch.py
 MAPQUEUE = {}	# Note: persisted through reloads in launch.py
 WHITELIST = {'192.168.0.*'}
 PINGTIME = 15
+PLAYERBUFFER = {}
+RESOURCES = {}
+f = open('resources/loadingpage.template.html', 'r')
+RESOURCES['loading_page_normal'] = f.read()
+f.close()
+f = open('resources/loadingpage.wormhole.html', 'r')
+RESOURCES['loading_page_wormhole'] = f.read()
+f.close()
+f = open('config/loading_images.txt', 'r')
+RESOURCES['loading_page_imagelist'] = f.read().split('\n')
+f.close()
 
 
 
@@ -72,8 +83,18 @@ def generate_id():
 
 
 @route('/')
-def hello():
+def toast():
     return "Toast"
+
+
+
+@route('/loading/<steamid>', method='GET')
+def loading_page():
+	if steamid in PLAYERBUFFER:
+		del PLAYERBUFFER[steamid]
+		return RESOURCES['loading_page_wormhole']
+	else:
+		return RESOURCES['loading_page_normal'].replace('{IMAGE}', random.choice(RESOURCES['loading_page_imagelist']))
 
 
 
@@ -116,7 +137,6 @@ def get_server_running_map(name):
 	openrequest = 0
 	if request.forms.get('open'): openrequest = int(request.forms.get('open'))
 	name = name.lower()
-	print(openrequest)
 
 	for key,server in SERVERS.items():
 		if server['map'] == name and 'changemap' not in server: #Ignore servers that are running this map but due to change
@@ -191,11 +211,14 @@ def get_dupe(name):
 def player_going_to_map(mapname):
 	mapname = mapname.lower()
 	player = request.forms.get('player')
+	steamid = request.forms.get('steamid')
 
 	MAPQUEUE.setdefault(mapname, []).append({
 		'event': 'player',
 		'player': player,
 	})
+	PLAYERBUFFER[steamid] = 1
+
 	print "Sending player", player, "to map", mapname
 	return {
 		'status': 'ok',
