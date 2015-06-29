@@ -182,23 +182,14 @@ def get_server_ping(name):
 
 
 
-@route('/server/id/<name>/dupe', method='GET')
+@route('/server/id/<name>/dupe', method='POST')
 def get_dupe(name):
 	dupe = request.forms.get('dupe')
-	dest = request.forms.get('dest')
-	pos = request.forms.get('pos')
-	ang = request.forms.get('ang')
-	vel = request.forms.get('vel')
-	angvel = request.forms.get('angvel')
-	dupetime = request.forms.get('time')
+	properties = request.forms.get('properties')
 	MAPQUEUE.setdefault(SERVERS[name]['map'], []).append({
 		'event': 'dupe',
 		'dupe': dupe,
-		'pos': pos,
-		'ang': ang,
-		'vel': vel,
-		'angvel': angvel,
-		'time': dupetime,
+		'properties': properties
 	})
 	print "Queued up a dupe going to " + name
 	return {
