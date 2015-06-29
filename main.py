@@ -89,7 +89,7 @@ def toast():
 
 
 @route('/loading/<steamid>', method='GET')
-def loading_page():
+def loading_page(steamid):
 	if steamid in PLAYERBUFFER:
 		del PLAYERBUFFER[steamid]
 		return RESOURCES['loading_page_wormhole']
