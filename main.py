@@ -54,12 +54,14 @@ def set_server_map(mapname, callingserver):
 		if key != callingserver and server['players'] < lowest_pop and ('changemap' not in server or server['changemap']['map'] == mapname):
 			lowest_server = key
 			lowest_pop = server['players']
-	delay = 0
-	if lowest_pop and lowest_pop < 3:
+	
+	if lowest_pop == 0:
+		delay = 0
+	elif lowest_pop and lowest_pop < 3:
 		delay = 60
 	else:
 		delay = 90
-	print "Telling (lowest) server", lowest_server, "to change maps to", mapname
+	print "Telling (lowest) server", lowest_server, "to change maps to", mapname, lowest_pop
 	SERVERS[lowest_server]['changemap'] = {'delay':delay, 'map':mapname}
 	MAPQUEUE.setdefault(SERVERS[lowest_server]['map'], []).append({
 		'event': 'changemap',
@@ -92,8 +94,10 @@ def toast():
 def loading_page(steamid):
 	if steamid in PLAYERBUFFER:
 		del PLAYERBUFFER[steamid]
+		print "Loading wormhole for", steamid
 		return RESOURCES['loading_page_wormhole']
 	else:
+		print "Loading normal for", steamid
 		return RESOURCES['loading_page_normal'].replace('{IMAGE}', random.choice(RESOURCES['loading_page_imagelist']))
 
 
@@ -183,7 +187,8 @@ def get_server_ping(name):
 
 
 @route('/server/map/<mapname>/dupe', method='POST')
-def get_dupe(name):
+def get_dupe(mapname):
+	mapname = mapname.lower()
 	dupe = request.forms.get('dupe')
 	properties = request.forms.get('properties')
 
@@ -193,7 +198,7 @@ def get_dupe(name):
 		'properties': properties
 	})
 
-	print "Queued up a dupe going to " + name
+	print "Queued up a dupe going to " + mapname
 	return {
 		'status': 'ok',
 	}
